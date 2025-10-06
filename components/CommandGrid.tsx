@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 // Fix: Module '"../data/commands"' declares 'Command' locally, but it is not exported.
 import { Command } from '../types';
@@ -7,14 +6,17 @@ import { useDebounce } from '../hooks/useDebounce';
 import Fuse from 'fuse.js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search } from 'lucide-react';
+import { ICONS } from '../constants';
 
 interface CommandGridProps {
   commands: Command[];
   categories: string[];
   onCommandSelect: (command: Command) => void;
+  favorites: string[];
+  onToggleFavorite: (commandId: string) => void;
 }
 
-const CommandGrid: React.FC<CommandGridProps> = ({ commands, categories, onCommandSelect }) => {
+const CommandGrid: React.FC<CommandGridProps> = ({ commands, categories, onCommandSelect, favorites, onToggleFavorite }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('الكل');
   
@@ -26,19 +28,27 @@ const CommandGrid: React.FC<CommandGridProps> = ({ commands, categories, onComma
   }), [commands]);
 
   const filteredCommands = useMemo(() => {
-    let result = commands;
+    let baseCommands = commands;
 
-    if (activeCategory !== 'الكل') {
-      result = result.filter(cmd => cmd.category === activeCategory);
+    if (activeCategory === 'المفضلة') {
+      const favoriteSet = new Set(favorites);
+      baseCommands = commands.filter(cmd => favoriteSet.has(cmd.id));
+    } else if (activeCategory !== 'الكل') {
+      baseCommands = commands.filter(cmd => cmd.category === activeCategory);
     }
     
     if (debouncedSearchTerm) {
-      const searchResult = fuse.search(debouncedSearchTerm);
-      result = searchResult.map(item => item.item);
+        // If there's a search term, search within the category-filtered commands
+        const fuseInstance = new Fuse(baseCommands, {
+            keys: ['title', 'short', 'detail', 'category'],
+            threshold: 0.3,
+        });
+        const searchResult = fuseInstance.search(debouncedSearchTerm);
+        return searchResult.map(item => item.item);
     }
 
-    return result;
-  }, [debouncedSearchTerm, activeCategory, commands, fuse]);
+    return baseCommands;
+  }, [debouncedSearchTerm, activeCategory, commands, favorites]);
   
   // Reset category when command set changes
   useEffect(() => {
@@ -61,24 +71,30 @@ const CommandGrid: React.FC<CommandGridProps> = ({ commands, categories, onComma
         </div>
         <div className="flex-shrink-0 self-start md:self-center overflow-x-auto scrollbar-hide">
             <div className="glassmorphism p-1.5 rounded-full flex items-center space-x-2 space-x-reverse w-max">
-            {categories.map(category => (
-                <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-300 focus:outline-none ${
-                    activeCategory === category ? 'text-white' : 'text-gray-400 hover:text-white'
-                }`}
-                >
-                {activeCategory === category && (
-                    <motion.div
-                    layoutId="active-category-item"
-                    className="absolute inset-0 bg-cyan-500/30 rounded-full"
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    />
-                )}
-                <span className="relative z-10">{category}</span>
-                </button>
-            ))}
+            {categories.map(category => {
+                const Icon = ICONS[category] || ICONS['default'];
+                return (
+                  <button
+                    key={category}
+                    onClick={() => setActiveCategory(category)}
+                    className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-300 focus:outline-none ${
+                        activeCategory === category ? 'text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {activeCategory === category && (
+                        <motion.div
+                        layoutId="active-category-item"
+                        className="absolute inset-0 bg-cyan-500/30 rounded-full"
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        />
+                    )}
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Icon className="w-4 h-4" />
+                      {category}
+                    </span>
+                  </button>
+                )
+            })}
             </div>
         </div>
       </div>
@@ -89,7 +105,13 @@ const CommandGrid: React.FC<CommandGridProps> = ({ commands, categories, onComma
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <AnimatePresence>
           {filteredCommands.map(command => (
-            <CommandCard key={command.id} command={command} onClick={() => onCommandSelect(command)} />
+            <CommandCard 
+              key={command.id} 
+              command={command} 
+              onClick={() => onCommandSelect(command)}
+              isFavorite={favorites.includes(command.id)}
+              onToggleFavorite={onToggleFavorite}
+            />
           ))}
         </AnimatePresence>
       </motion.div>

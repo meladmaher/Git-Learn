@@ -4,15 +4,22 @@ import React from 'react';
 import { Command } from '../types';
 import { ICONS } from '../constants';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Star } from 'lucide-react';
 
 interface CommandCardProps {
   command: Command;
   onClick: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: (commandId: string) => void;
 }
 
-const CommandCard: React.FC<CommandCardProps> = ({ command, onClick }) => {
+const CommandCard: React.FC<CommandCardProps> = ({ command, onClick, isFavorite, onToggleFavorite }) => {
   const Icon = ICONS[command.category] || ICONS['default'];
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleFavorite(command.id);
+  };
 
   return (
     <motion.div
@@ -22,7 +29,7 @@ const CommandCard: React.FC<CommandCardProps> = ({ command, onClick }) => {
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
       onClick={onClick}
-      className="glassmorphism rounded-2xl p-6 cursor-pointer group relative overflow-hidden"
+      className="glassmorphism rounded-2xl p-6 cursor-pointer group relative overflow-hidden flex flex-col"
     >
       <div className="absolute -top-10 -right-10 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl transition-all duration-500 group-hover:scale-150"></div>
       
@@ -31,7 +38,16 @@ const CommandCard: React.FC<CommandCardProps> = ({ command, onClick }) => {
           <div className="bg-cyan-500/20 p-3 rounded-lg self-start">
             <Icon className="w-7 h-7 text-cyan-400" />
           </div>
-          <span className="text-xs font-medium bg-white/10 px-2 py-1 rounded-full">{command.category}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium bg-white/10 px-2 py-1 rounded-full">{command.category}</span>
+            <button 
+              onClick={handleFavoriteClick} 
+              className="p-1 text-gray-400 hover:text-yellow-400 transition-colors z-20"
+              aria-label={isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+            >
+              <Star className={`w-5 h-5 transition-colors ${isFavorite ? 'fill-current text-yellow-400' : ''}`} />
+            </button>
+          </div>
         </div>
         
         <div className="mt-4 flex-grow">

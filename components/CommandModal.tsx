@@ -5,11 +5,13 @@ import { Command } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { X, Copy, Check, Terminal } from 'lucide-react';
+import { X, Copy, Check, Terminal, Star } from 'lucide-react';
 
 interface CommandModalProps {
   command: Command | null;
   onClose: () => void;
+  favorites: string[];
+  onToggleFavorite: (commandId: string) => void;
 }
 
 const TerminalSimulation: React.FC<{ command: string }> = ({ command }) => {
@@ -49,7 +51,7 @@ const TerminalSimulation: React.FC<{ command: string }> = ({ command }) => {
     );
 };
 
-const CommandModal: React.FC<CommandModalProps> = ({ command, onClose }) => {
+const CommandModal: React.FC<CommandModalProps> = ({ command, onClose, favorites, onToggleFavorite }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [showTerminal, setShowTerminal] = useState(false);
 
@@ -77,6 +79,8 @@ const CommandModal: React.FC<CommandModalProps> = ({ command, onClose }) => {
     visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 30 } },
     exit: { opacity: 0, y: 50, scale: 0.9, transition: { duration: 0.2 } },
   };
+
+  const isFavorite = command ? favorites.includes(command.id) : false;
   
   return (
     <AnimatePresence>
@@ -97,12 +101,24 @@ const CommandModal: React.FC<CommandModalProps> = ({ command, onClose }) => {
             <button
               onClick={onClose}
               className="absolute top-4 left-4 text-gray-400 hover:text-white transition-colors"
+              aria-label="إغلاق"
             >
               <X size={24} />
             </button>
 
-            <h2 className="text-3xl font-bold text-white font-mono">{command.title}</h2>
-            <p className="mt-2 text-cyan-400">{command.short}</p>
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-3xl font-bold text-white font-mono">{command.title}</h2>
+                <p className="mt-2 text-cyan-400">{command.short}</p>
+              </div>
+              <button 
+                  onClick={() => onToggleFavorite(command.id)}
+                  className="p-2 text-gray-400 hover:text-yellow-400 transition-colors flex-shrink-0 ml-4"
+                  aria-label={isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+              >
+                  <Star size={28} className={`transition-all duration-300 ${isFavorite ? 'fill-current text-yellow-400' : 'text-gray-400'}`} />
+              </button>
+            </div>
 
             <div className="mt-6 border-t border-white/10 pt-6">
               <h3 className="text-xl font-bold text-white mb-2">شرح مفصل</h3>
@@ -118,6 +134,7 @@ const CommandModal: React.FC<CommandModalProps> = ({ command, onClose }) => {
                 <button
                   onClick={handleCopy}
                   className="absolute top-3 right-3 p-2 bg-gray-700/50 rounded-lg text-gray-300 hover:bg-gray-600/50 hover:text-white transition-all duration-200 opacity-0 group-hover:opacity-100"
+                  aria-label="نسخ الأمر"
                 >
                   {isCopied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
                 </button>

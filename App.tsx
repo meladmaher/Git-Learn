@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Header from './components/Header';
 import CommandGrid from './components/CommandGrid';
 import CommandModal from './components/CommandModal';
@@ -10,6 +10,27 @@ import { Command, CommandType } from './types';
 export default function App() {
   const [activeSection, setActiveSection] = useState<CommandType>(CommandType.GIT);
   const [selectedCommand, setSelectedCommand] = useState<Command | null>(null);
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const savedFavorites = localStorage.getItem('favoriteCommands');
+      return savedFavorites ? JSON.parse(savedFavorites) : [];
+    } catch (error) {
+      console.error('Failed to parse favorites from localStorage', error);
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('favoriteCommands', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (commandId: string) => {
+    setFavorites(prev => 
+      prev.includes(commandId)
+        ? prev.filter(id => id !== commandId)
+        : [...prev, commandId]
+    );
+  };
 
   const commands = useMemo(() => {
     return activeSection === CommandType.GIT ? gitCommands : cmdCommands;
@@ -17,8 +38,12 @@ export default function App() {
 
   const categories = useMemo(() => {
     const allCategories = commands.map(cmd => cmd.category);
-    return ['الكل', ...Array.from(new Set(allCategories))];
-  }, [commands]);
+    const uniqueCategories = ['الكل', ...Array.from(new Set(allCategories))];
+    if (favorites.length > 0) {
+      uniqueCategories.splice(1, 0, 'المفضلة');
+    }
+    return uniqueCategories;
+  }, [commands, favorites.length]);
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden">
@@ -32,13 +57,17 @@ export default function App() {
         <CommandGrid 
           commands={commands} 
           categories={categories}
-          onCommandSelect={setSelectedCommand} 
+          onCommandSelect={setSelectedCommand}
+          favorites={favorites}
+          onToggleFavorite={toggleFavorite}
         />
       </main>
 
       <CommandModal 
         command={selectedCommand} 
-        onClose={() => setSelectedCommand(null)} 
+        onClose={() => setSelectedCommand(null)}
+        favorites={favorites}
+        onToggleFavorite={toggleFavorite}
       />
     </div>
   );

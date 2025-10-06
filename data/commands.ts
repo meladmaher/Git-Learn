@@ -1,4 +1,3 @@
-
 import { Command, CommandType } from '../types';
 
 export const gitCommands: Command[] = [
@@ -123,6 +122,15 @@ export const cmdCommands: Command[] = [
     example: 'mkdir new-folder'
   },
   {
+    id: 'cmd-tree',
+    type: CommandType.CMD,
+    category: 'مجلدات',
+    title: 'tree',
+    short: 'عرض بنية المجلد في شكل شجري.',
+    detail: 'يقوم بعرض بنية المجلدات لمسار أو قرص بشكل رسومي يشبه الشجرة. إنه أمر مفيد لتصور التسلسل الهرمي للمجلدات. متوفر أصلاً في Windows ويمكن تثبيته على أنظمة Unix.',
+    example: 'tree'
+  },
+  {
     id: 'cmd-rm',
     type: CommandType.CMD,
     category: 'ملفات',
@@ -184,5 +192,32 @@ export const cmdCommands: Command[] = [
     short: 'مسح شاشة الطرفية.',
     detail: 'يقوم بتنظيف جميع النصوص من شاشة الطرفية، مما يوفر شاشة نظيفة للعمل. `clear` في Unix، و `cls` (Clear Screen) في Windows.',
     example: 'clear'
+  },
+  {
+    id: 'cmd-grep',
+    type: CommandType.CMD,
+    category: 'أدوات مساعدة',
+    title: 'grep / findstr',
+    short: 'البحث عن نص داخل ملفات.',
+    detail: 'يبحث عن سطور تطابق نمطًا معينًا داخل ملف واحد أو عدة ملفات. \'grep\' هو الأمر الشائع في أنظمة Unix، بينما \'findstr\' هو نظيره في Windows.',
+    example: 'grep "error" log.txt\nfindstr "error" log.txt'
+  },
+  {
+    id: 'cmd-find-files',
+    type: CommandType.CMD,
+    category: 'أدوات مساعدة',
+    title: 'find',
+    short: 'البحث عن ملفات ومجلدات.',
+    detail: 'يستخدم للبحث عن ملفات ومجلدات بناءً على معايير مختلفة مثل الاسم، الحجم، أو تاريخ التعديل. قوي جدًا في أنظمة Unix. في Windows، يمكن استخدام \'dir /s\' للبحث البسيط بالاسم.',
+    example: 'find . -name "*.js"\ndir /s /b *.js'
+  },
+  {
+    id: 'cmd-tar',
+    type: CommandType.CMD,
+    category: 'أدوات مساعدة',
+    title: 'tar',
+    short: 'أرشفة وفك أرشفة الملفات.',
+    detail: 'يقوم بإنشاء أو استخراج ملفات الأرشيف (مثل .tar, .tar.gz). يستخدم لتجميع عدة ملفات في ملف واحد لسهولة النقل أو التخزين. متوفر أصلاً في أنظمة Unix وفي الإصدارات الحديثة من Windows.',
+    example: 'tar -czvf archive.tar.gz /path/to/dir\ntar -xzvf archive.tar.gz'
   }
 ];
