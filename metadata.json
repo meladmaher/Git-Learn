@@ -1,0 +1,5 @@
+{
+  "name": "مرجع الأوامر",
+  "description": "A responsive Arabic website that serves as a visual and interactive reference for Git and CMD/Terminal commands, featuring a dark mode UI, search, filtering, and code examples.",
+  "requestFramePermissions": []
+}
