@@ -1,4 +1,3 @@
-
 import React from 'react';
 // Fix: Module '"../data/commands"' declares 'Command' locally, but it is not exported.
 import { Command } from '../types';
@@ -38,7 +37,10 @@ const CommandCard: React.FC<CommandCardProps> = ({ command, onClick, isFavorite,
           <div className="bg-cyan-500/20 p-3 rounded-lg self-start">
             <Icon className="w-7 h-7 text-cyan-400" />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {command.isDeprecated && (
+              <span className="text-xs font-medium bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full">قديم</span>
+            )}
             <span className="text-xs font-medium bg-white/10 px-2 py-1 rounded-full">{command.category}</span>
             <button 
               onClick={handleFavoriteClick} 

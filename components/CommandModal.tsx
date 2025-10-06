@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 // Fix: Module '"../data/commands"' declares 'Command' locally, but it is not exported.
 import { Command } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { X, Copy, Check, Terminal, Star } from 'lucide-react';
+import { X, Copy, Check, Terminal, Star, AlertTriangle } from 'lucide-react';
 
 interface CommandModalProps {
   command: Command | null;
@@ -119,6 +118,20 @@ const CommandModal: React.FC<CommandModalProps> = ({ command, onClose, favorites
                   <Star size={28} className={`transition-all duration-300 ${isFavorite ? 'fill-current text-yellow-400' : 'text-gray-400'}`} />
               </button>
             </div>
+            
+            {command.isDeprecated && (
+                <div className="mt-6 p-4 bg-yellow-900/40 border border-yellow-500/30 rounded-lg text-sm">
+                    <div className="flex items-center gap-3">
+                      <AlertTriangle className="w-6 h-6 text-yellow-400 flex-shrink-0" />
+                      <h4 className="font-bold text-yellow-300 text-base">إشعار: هذا الأمر يعتبر قديمًا</h4>
+                    </div>
+                    <p className="text-yellow-300/90 mt-2">
+                        تم استبدال هذا الأمر بـ <code className="font-mono bg-black/30 px-1.5 py-0.5 rounded text-yellow-200">{command.replacedBy}</code>.
+                    </p>
+                    {command.reason && <p className="text-yellow-400/70 mt-2">{command.reason}</p>}
+                </div>
+            )}
+
 
             <div className="mt-6 border-t border-white/10 pt-6">
               <h3 className="text-xl font-bold text-white mb-2">شرح مفصل</h3>

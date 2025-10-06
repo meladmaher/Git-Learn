@@ -8,7 +8,8 @@ export const gitCommands: Command[] = [
     title: 'git init',
     short: 'إنشاء مستودع Git جديد.',
     detail: 'يقوم هذا الأمر بتهيئة مجلد جديد كمستودع Git، مما يسمح بتتبع تغييرات الملفات. ينشئ مجلدًا مخفيًا باسم .git لتخزين كل معلومات المستودع.',
-    example: 'git init my-new-project'
+    example: 'git init my-new-project',
+    isEssential: true,
   },
   {
     id: 'git-clone',
@@ -17,7 +18,8 @@ export const gitCommands: Command[] = [
     title: 'git clone',
     short: 'نسخ مستودع موجود.',
     detail: 'يستخدم لإنشاء نسخة محلية من مستودع بعيد. يتم تنزيل كل تاريخ المشروع والملفات إلى جهازك.',
-    example: 'git clone https://github.com/user/repo.git'
+    example: 'git clone https://github.com/user/repo.git',
+    isEssential: true,
   },
   {
     id: 'git-add',
@@ -26,7 +28,8 @@ export const gitCommands: Command[] = [
     title: 'git add',
     short: 'إضافة التغييرات إلى منطقة التجهيز.',
     detail: 'يضيف التغييرات في دليل العمل إلى منطقة التجهيز (Staging Area)، تمهيدًا لتضمينها في الـ commit التالي. يمكنك إضافة ملفات محددة أو كل التغييرات.',
-    example: 'git add index.html\ngit add .'
+    example: 'git add index.html\ngit add .',
+    isEssential: true,
   },
   {
     id: 'git-commit',
@@ -35,7 +38,8 @@ export const gitCommands: Command[] = [
     title: 'git commit',
     short: 'حفظ التغييرات في المستودع.',
     detail: 'يسجل لقطة من التغييرات المجهزة في تاريخ المشروع. كل commit له معرف فريد ورسالة تصف التغييرات.',
-    example: 'git commit -m "إضافة صفحة تسجيل الدخول"'
+    example: 'git commit -m "إضافة صفحة تسجيل الدخول"',
+    isEssential: true,
   },
   {
     id: 'git-status',
@@ -44,7 +48,17 @@ export const gitCommands: Command[] = [
     title: 'git status',
     short: 'عرض حالة دليل العمل ومنطقة التجهيز.',
     detail: 'يعرض الملفات التي تم تعديلها، والملفات المجهزة للـ commit، والملفات التي لا يتم تتبعها بواسطة Git.',
-    example: 'git status'
+    example: 'git status',
+    isEssential: true,
+  },
+  {
+    id: 'git-log',
+    type: CommandType.GIT,
+    category: 'أساسي',
+    title: 'git log',
+    short: 'عرض سجل الـ commits.',
+    detail: 'يعرض قائمة بالـ commits التي تم إجراؤها في الفرع الحالي، مع إظهار معرف كل commit، المؤلف، التاريخ، والرسالة.',
+    example: 'git log --oneline --graph',
   },
   {
     id: 'git-branch',
@@ -53,7 +67,18 @@ export const gitCommands: Command[] = [
     title: 'git branch',
     short: 'إدارة الفروع.',
     detail: 'يستخدم لإنشاء، سرد، أو حذف الفروع. الفروع تسمح لك بتطوير الميزات بمعزل عن الفرع الرئيسي.',
-    example: 'git branch new-feature\ngit branch -d old-feature'
+    example: 'git branch new-feature\ngit branch -d old-feature',
+    isEssential: true,
+  },
+  {
+    id: 'git-switch',
+    type: CommandType.GIT,
+    category: 'تفرع',
+    title: 'git switch',
+    short: 'التبديل بين الفروع.',
+    detail: 'أمر حديث مخصص للتنقل بين الفروع. يوفر واجهة أكثر وضوحًا من `git checkout` لنفس الغرض. يمكن استخدامه أيضًا لإنشاء فرع جديد والتبديل إليه مباشرة.',
+    example: 'git switch main\ngit switch -c new-feature',
+    isEssential: true,
   },
   {
     id: 'git-checkout',
@@ -61,8 +86,30 @@ export const gitCommands: Command[] = [
     category: 'تفرع',
     title: 'git checkout',
     short: 'التبديل بين الفروع أو استعادة الملفات.',
-    detail: 'يستخدم للتنقل بين الفروع المختلفة في المستودع. يمكن استخدامه أيضًا لاستعادة ملفات دليل العمل إلى حالتها في commit معين.',
-    example: 'git checkout new-feature'
+    detail: 'يستخدم للتنقل بين الفروع المختلفة في المستودع. لاستخدام أكثر تخصصًا ووضوحًا، يُفضل استخدام `git switch` للتبديل بين الفروع و `git restore` لاستعادة الملفات.',
+    example: 'git checkout new-feature',
+    isEssential: true,
+  },
+  {
+    id: 'git-checkout-file-deprecated',
+    type: CommandType.GIT,
+    category: 'أساسي',
+    title: 'git checkout -- <file>',
+    short: 'التراجع عن التغييرات في ملف (قديم).',
+    detail: 'يستخدم هذا الأمر للتراجع عن التغييرات التي لم يتم تجهيزها في ملف معين، وإعادته إلى حالته في آخر commit.',
+    example: 'git checkout -- index.html',
+    isDeprecated: true,
+    replacedBy: 'git restore <file>',
+    reason: 'تم تقديم `git restore` في Git 2.23 لتوفير وضوح أكبر وفصل مهام استعادة الملفات عن `git checkout` الذي كان متعدد الاستخدامات.'
+  },
+  {
+    id: 'git-restore',
+    type: CommandType.GIT,
+    category: 'أساسي',
+    title: 'git restore',
+    short: 'استعادة ملفات دليل العمل.',
+    detail: 'يستخدم لاستعادة الملفات في دليل العمل. يمكن استخدامه للتراجع عن التغييرات في ملف (`git restore <file>`) أو لإلغاء تجهيز ملف من منطقة التجهيز (`git restore --staged <file>`).',
+    example: 'git restore index.html\ngit restore --staged script.js',
   },
   {
     id: 'git-merge',
@@ -71,7 +118,17 @@ export const gitCommands: Command[] = [
     title: 'git merge',
     short: 'دمج فرعين معًا.',
     detail: 'يأخذ التغييرات من فرع ويدمجها في الفرع الحالي. يستخدم غالبًا لدمج فرع ميزة في الفرع الرئيسي بعد اكتمال العمل.',
-    example: 'git merge feature-branch'
+    example: 'git merge feature-branch',
+    isEssential: true,
+  },
+  {
+    id: 'git-rebase',
+    type: CommandType.GIT,
+    category: 'تفرع',
+    title: 'git rebase',
+    short: 'إعادة تطبيق commits على قاعدة جديدة.',
+    detail: 'يستخدم لنقل سلسلة من الـ commits إلى نقطة بداية جديدة. على عكس الدمج، ينتج عن `rebase` تاريخ مشروع خطي ونظيف.',
+    example: 'git rebase main',
   },
   {
     id: 'git-push',
@@ -80,7 +137,8 @@ export const gitCommands: Command[] = [
     title: 'git push',
     short: 'إرسال التغييرات إلى مستودع بعيد.',
     detail: 'يقوم برفع الـ commits المحلية إلى الفرع المقابل في المستودع البعيد، مما يتيح مشاركة عملك مع الآخرين.',
-    example: 'git push origin main'
+    example: 'git push origin main',
+    isEssential: true,
   },
   {
     id: 'git-pull',
@@ -89,7 +147,26 @@ export const gitCommands: Command[] = [
     title: 'git pull',
     short: 'جلب التغييرات من مستودع بعيد ودمجها.',
     detail: 'يقوم بتحديث فرعك المحلي بآخر التغييرات من المستودع البعيد. هو اختصار لأمري `git fetch` متبوعًا بـ `git merge`.',
-    example: 'git pull origin main'
+    example: 'git pull origin main',
+    isEssential: true,
+  },
+  {
+    id: 'git-fetch',
+    type: CommandType.GIT,
+    category: 'مزامنة',
+    title: 'git fetch',
+    short: 'تنزيل التغييرات من مستودع بعيد.',
+    detail: 'يقوم بتنزيل الـ commits والفروع والـ tags من المستودع البعيد إلى مستودعك المحلي، ولكنه لا يقوم بدمجها مع فروعك الحالية.',
+    example: 'git fetch origin',
+  },
+  {
+    id: 'git-remote',
+    type: CommandType.GIT,
+    category: 'مزامنة',
+    title: 'git remote',
+    short: 'إدارة المستودعات البعيدة.',
+    detail: 'يستخدم لإدارة مجموعة المستودعات البعيدة التي يتتبعها مستودعك. يمكنك إضافة، عرض، أو إزالة الروابط البعيدة.',
+    example: 'git remote -v\ngit remote add upstream https://github.com/user/repo.git',
   }
 ];
 
